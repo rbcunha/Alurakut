@@ -23,6 +23,27 @@ function ProfileSideBar(propriedades) {
   )
 }
 
+function ProfileRelationsBox(propriedades) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {propriedades.title} ({propriedades.items.length})
+      </h2>
+      <ul>
+        {/* {seguidores.map((itemAtual) => {
+          return (
+            <li key={itemAtual}>
+              <a href={`https://github.com/${itemAtual}.png`}
+                <img src={itemAtual.image} />
+                <span>{itemAtual.title}</span>
+              </a>
+            </li>
+          )
+        })} */}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  )
+}
 export default function Home() {
   const aleatoryUser = 'rbcunha';
   const [comunidades, setComunidades] = React.useState([{
@@ -32,8 +53,6 @@ export default function Home() {
   }]);
   //const comunidades = comunidades[0];
   //const alterador de comunidades/setComunidades = comunidades[1];
-
-  console.log('nosso teste', comunidades);
   //const comunidades = ['Alurakut'];
   const pessoasFavoritas = [
     'juunegreiros', 
@@ -43,7 +62,23 @@ export default function Home() {
     'marcobrunodev',
     'felipefialho',
   ]
+  const [seguidores, setSeguidores] = React.useState([]);
+  //0 - pegar o array de dados do github
+  React.useEffect(function() {
+    fetch('https://api.github.com/users/peas/followers')
+    .then(function (respostaDoServidor) {
+      return respostaDoServidor.json();
+    })
+    .then(function (respostaCompleta) {
+      setSeguidores(respostaCompleta);
+    })
+  }, [])
   
+  console.log('seguidores antes do return', seguidores);
+
+  //1 - Criar um box que vai ter um map, baseado nos item do array 
+  //que pegamos do github
+
   return (
     <>
       <AlurakutMenu />
@@ -104,6 +139,7 @@ export default function Home() {
           </Box>
         </div>
         <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>
+          <ProfileRelationsBox title="seguidores" items={seguidores} />
           <ProfileRelationsBoxWrapper>
           <h2 className="smallTitle">
             Comunidades ({comunidades.length})
@@ -129,7 +165,7 @@ export default function Home() {
               {pessoasFavoritas.map((itemAtual) => {
                 return (
                   <li key={itemAtual}>
-                    <a href={`/users/${itemAtual}`} key={itemAtual}>
+                    <a href={`/users/${itemAtual}`}>
                       <img src={`https://github.com/${itemAtual}.png`} />
                       <span>{itemAtual}</span>
                     </a>
