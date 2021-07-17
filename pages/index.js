@@ -46,11 +46,7 @@ function ProfileRelationsBox(propriedades) {
 }
 export default function Home() {
   const aleatoryUser = 'rbcunha';
-  const [comunidades, setComunidades] = React.useState([{
-    id: '1201230712731240183497034701',
-    title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }]);
+  const [comunidades, setComunidades] = React.useState([])
   //const comunidades = comunidades[0];
   //const alterador de comunidades/setComunidades = comunidades[1];
   //const comunidades = ['Alurakut'];
@@ -65,6 +61,7 @@ export default function Home() {
   const [seguidores, setSeguidores] = React.useState([]);
   //0 - pegar o array de dados do github
   React.useEffect(function() {
+    //GET
     fetch('https://api.github.com/users/peas/followers')
     .then(function (respostaDoServidor) {
       return respostaDoServidor.json();
@@ -72,6 +69,33 @@ export default function Home() {
     .then(function (respostaCompleta) {
       setSeguidores(respostaCompleta);
     })
+
+    //API GraphQL
+    fetch('https://graphql.datocms.com', {
+      method: 'POST',
+      headers: {
+        'Authorization': '6324604e660f07ffccfe21090c91d9',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ "query": `query{
+        allComunnities {
+          title
+          id
+          imageUrl
+          creatorSlug
+        }
+      }` })
+    })
+    .then((response) => response.json()) //Pega o retorno do response.json e retorna
+    .then((respostaCompleta) => {
+      const comunidadesVindasDoDato = respostaCompleta.data.allComunnities;
+      console.log(comunidadesVindasDoDato)
+      setComunidades(comunidadesVindasDoDato)
+
+      //console.log(respostaCompleta)
+    })
+
   }, [])
   
   console.log('seguidores antes do return', seguidores);
