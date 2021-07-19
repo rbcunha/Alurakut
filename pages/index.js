@@ -130,14 +130,29 @@ export default function Home() {
               console.log('Campo: ', dadosDoForm.get('image'));
 
               const comunidade = {
-                id: new Date().toISOString(),
+                //id: new Date().toISOString(),
                 title: dadosDoForm.get('title'),
-                image: dadosDoForm.get('image'),
+                imageUrl: dadosDoForm.get('image'),
+                creatorSlug:'aleatoryUser'
               }
 
-              const comunidadesAtualizadas = [...comunidades, 'comunidade'];
-              setComunidades(comunidadesAtualizadas)
+              fetch('/api/comunidades', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(comunidade)
+              })
+              .then(async(response) => {
+                const dados = await response.json();
+                console.log(dados.registroCriado);
+                const comunidade = dados.registroCriado;
+                const comunidadesAtualizadas = [...comunidades, 'comunidade'];
+                setComunidades(comunidadesAtualizadas)
 
+              })
+
+              
             }}>
               <div>
                 <input 
@@ -172,7 +187,7 @@ export default function Home() {
                 {comunidades.map((itemAtual) => {
                   return (
                     <li key={itemAtual.id}>
-                      <a href={`/users/${itemAtual.title}`}>
+                      <a href={`/comunidades/${itemAtual.id}`}>
                         <img src={itemAtual.image} />
                         <span>{itemAtual.title}</span>
                       </a>
